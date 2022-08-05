@@ -28,14 +28,12 @@ def detail():
    if request.method=='POST':
       name=request.form['Uname']
       password=request.form['Pass']
-      with open(r'C:\Users\ghosh\AppData\Local\Programs\Python\Python39\Flask_project\password.db') as conn:
-         c=conn.cursor()
-         c.execute("insert into user_list('name','pass') values(?,?)"(name,password))
-         conn.commit()
-         c.close()
-         conn.close()
-         return 'Success'
-
+      conn=sqlite3.connect(r'C:\Users\ghosh\AppData\Local\Programs\Python\Python39\Flask_project\password.db')
+      c=conn.cursor()
+      c.execute("insert into user_list(name,pass) values(?,?)",('human','steel'))
+      conn.commit()
+      conn.close()
+      return render_template('result.html',user=name,password=password)
 
 
 if __name__=="__main__":
