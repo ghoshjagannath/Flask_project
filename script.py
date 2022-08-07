@@ -62,7 +62,7 @@ def upload():
    if request.method=='POST':
       f=request.files['file']
       f.save(secure_filename(f.filename))
-      return "very successful"
+      return 'Something is good '
    
 
 
