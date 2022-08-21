@@ -2,13 +2,14 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link href="{{url_for('static', filename = 'style.css')}}" rel="stylesheet">
+        <!-- <link href="{{url_for('static', filename = 'style.css')}}" rel="stylesheet">s -->
         <title>{% block title %} {% endblock title %}</title>
     </head>
 <body>
 
 {% block body %}
-
+    {{ name }} 
+   
 {% endblock body%}
 </body>
 </html>

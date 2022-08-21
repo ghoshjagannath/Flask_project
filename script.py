@@ -1,8 +1,10 @@
 import sqlite3
-from flask import Flask,redirect,url_for,render_template,request,abort,flash
-from werkzeug.utils import secure_filename
-from werkzeug.datastructures import  FileStorage
 import os 
+from flask import Flask,redirect,url_for,render_template,request,abort,flash
+from flask_wtf import FlaskForm
+from wtforms import StringField,SubmitField
+from wtforms.validators import DataRequired
+from werkzeug.utils import secure_filename
 
 
 #initialize flask web app 
@@ -36,7 +38,7 @@ def detail():
       # c.execute("insert into user_list(name,pass) values(?,?)",('human','steel'))
       # conn.commit()
       # conn.close()
-      return render_template('result.html',user=name,password=password)
+      return render_template('welcome_result.html',user=name,password=password)
    else:
       flash('You are doing something wrong')
 
@@ -62,8 +64,7 @@ def upload():
    if request.method=='POST':
       f=request.files['file']
       f.save(secure_filename(f.filename))
-      return 'Something is good '
-   
+      return render_template("upload_result.html",filename=f.filename)
 
 
 
