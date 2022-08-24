@@ -5,25 +5,28 @@ from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField
 from wtforms.validators import DataRequired
 from werkzeug.utils import secure_filename
-
+from formsubmit import *
 
 #initialize flask web app 
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER']=r"C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/static/files/"
 
-conn=sqlite3.connect(r'C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/password.db')
+# conn=sqlite3.connect(r'C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/password.db')
 
 
 #creating user and password database in sqlite3 system if password.db is not present in parents folder. 
 
-command='''CREATE TABLE  if not Exists user_list (name TEXT NOT NULL,pass TEXT NOT NULL)'''
+# command='''CREATE TABLE  if not Exists user_list (name TEXT NOT NULL,pass TEXT NOT NULL)'''
+
+app.config['SECRET_KEY']='1234'
 
 
 #telling us about the creator
-@app.route("/")
-def login():
-   return render_template('upload_file.html')
+# @app.route("/")
+# def login():
+#    flash('You are successful')
+#    return render_template('upload_file.html')
  
  
 
@@ -66,6 +69,21 @@ def upload():
       f.save(secure_filename(f.filename))
       return render_template("upload_result.html",filename=f.filename)
 
+
+@app.route("/base")
+def base():
+   return render_template('base.html')
+
+ 
+
+
+@app.route('/', methods=["GET",'POST'])
+def submit():
+    form = Form()
+    if form.validate_on_submit():
+       return redirect(url_for("/welcome.html"))
+    return render_template('wtf.html', form=form)
+ 
 
 
 
