@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+User list 
+
+{% endblock title %}
+
+
+
+
+{% block body %}
+   {% for data in datas %}
+   {{ data }}
+   <br>
+   
+   {% endfor %}
+   
+{% endblock body%}
