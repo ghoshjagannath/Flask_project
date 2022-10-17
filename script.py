@@ -19,18 +19,26 @@ from formsubmit import *
 #for security of password it is used
 from werkzeug.security import generate_password_hash,check_password_hash
 
+
+
+
+#importing essential modules for other workds
+import re
+
+
+
+
+
+
+
+
+
+
+
+
 #initialize flask web app 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER']=r"C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/static/files/"
 app.config['SECRET_KEY']='1234'
-
-#####################################
-# conn=sqlite3.connect(r'C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/password.db')
-#creating user and password database in sqlite3 system if password.db is not present in parents folder. 
-# command='''CREATE TABLE  if not Exists user_list (name TEXT NOT NULL,pass TEXT NOT NULL)'''
-
-######################################
-
 
 
 
@@ -42,11 +50,28 @@ def login():
    return render_template('login_page.html')
 
 
-@app.route('/success',methods=['GET'])
+@app.route('/success',methods=["POST",'GET'])
 def success():
-   session['name']=request.form.get('username')
-   data=session.pop('name')
+   email_match=r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
  
+   if request.method=="POST":
+      fname=request.form['fname']
+      lname=request.form['lname']
+      email=request.form['email']
+      
+      #This loop validate if this is valid fname, lname and email address also 
+      #other wise it will rise error message for this 
+      
+   
+      if fname !=None and lname !=None and (re.fullmatch(email_match, email)):
+         return render_template('login_success.html',user=(fname,lname,email))
+      else:
+         if not re.fullmatch(email_match, email):
+            msg='Email not valid'
+            return render_template('login_error.html',msg=msg)
+         else:
+            msg='Something else is wrong'
+            return render_template('login_error.html',msg=msg)
  
 
 
