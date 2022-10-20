@@ -29,13 +29,6 @@ import re
 
 
 
-
-
-
-
-
-
-
 #initialize flask web app 
 app = Flask(__name__)
 app.config['SECRET_KEY']='1234'
