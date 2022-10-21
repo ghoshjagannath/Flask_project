@@ -1,3 +1,4 @@
+####################################################################################
 import sqlite3
 import os 
 
@@ -26,8 +27,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 import re
 
 
-
-
+####################################################################################
 
 #initialize flask web app 
 app = Flask(__name__)
@@ -37,36 +37,79 @@ app.config['SECRET_KEY']='1234'
 
 # telling us about the creator
 #in this page we need to log in to the system 
+
 @app.route("/")
-def login():
-   flash('You are successful')
-   return render_template('login_page.html')
+def register_form():
+   return render_template('register.html')
 
 
-@app.route('/success',methods=["POST",'GET'])
-def success():
-   email_match=r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
- 
-   if request.method=="POST":
-      fname=request.form['fname']
-      lname=request.form['lname']
+
+#this function will do for register action
+@app.route('/register',methods=['POST','GET'])
+def register():
+   if request.method=='POST':
       email=request.form['email']
+      psw=request.form['password']
       
-      #This loop validate if this is valid fname, lname and email address also 
-      #other wise it will rise error message for this 
+      
+      email_match=r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+      pattern=re.compile(email_match)
+      if pattern.match(email):
+         #connection with sqlite3 database for query to data 
+         connect=sqlite3.connect(r"C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/password.db")
+         cursor=connect.cursor()
+         
+         #query-1 , if the user is already in the data base then we will return to the login page
+         query="select email from password_table"
+         cursor.execute(query)
+         x=cursor.fetchall()
+         
+         # this function only check if the email address is available  in database , if it is 
+         # available in the database then it will redirect into the login page 
+         # if is not available in database then it will insert into database with password 
+         
+         if email in [y[0] for y in x]:
+               return render_template('login_page.html')
+         else:
+               query2="insert into password_table values(?,?)"
+               cursor.execute(query2,(email,psw))
+               connect.commit()
+               connect.close()
+               return render_template('new.html',data='You are successful into this system')
+         
+         
+
+      else:
+         return render_template('register.html')
+      
       
    
-      if fname !=None and lname !=None and (re.fullmatch(email_match, email)):
-         return render_template('login_success.html',user=(fname,lname,email))
-      else:
-         if not re.fullmatch(email_match, email):
-            msg='Email not valid'
-            return render_template('login_error.html',msg=msg)
-         else:
-            msg='Something else is wrong'
-            return render_template('login_error.html',msg=msg)
- 
-
-
+      
+      
+      
+              
+         
+         
+     
 if __name__=="__main__":
    app.run(debug=True)
+
+
+
+
+
+# #If login is successful then This function is called here 
+
+# @app.route('/success',methods=["POST",'GET'])
+# def success():
+#    email_match=r'/b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/.[A-Z|a-z]{2,}/b'
+#    msg=''
+ 
+#    if request.method=="POST":
+#       email=request.form['email']
+#       psw=request.form['password']
+      
+    
+        
+
+
