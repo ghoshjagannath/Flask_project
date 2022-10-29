@@ -27,20 +27,35 @@ from werkzeug.security import generate_password_hash,check_password_hash
 import re
 
 
+#importing PyPdf2 module for pdf manipilation
+from PyPDF2 import PdfFileReader,PdfFileReader
+from pprint import pprint
+
 ###################################################################################################################
 
 #initialize flask web app 
 app = Flask(__name__)
 app.config['SECRET_KEY']='1234'
-
-
+app.config['UPLOAD_FOLDER']=r"C:\Users\ghosh\AppData\Local\Programs\Python\Python39\Flask_project"
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 
 # telling us about the creator
 #in this page we need to log in to the system 
 
 @app.route("/")
 def Home():
+   return render_template('new.html')
+
+@app.route("/log")
+def log():
    return render_template('login_page.html')
+
+
+@app.route('/reg')
+def reg():
+   return render_template('register.html')
+
+
 
 
 ###################################################################################################################
@@ -58,7 +73,7 @@ def register():
       if pattern.match(email):
          
          #connection with sqlite3 database for query to data 
-         connect=sqlite3.connect(r"C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/password.db")
+         connect=sqlite3.connect(r"C:\Program Files\DB Browser for SQLite\password.db")
          cursor=connect.cursor()
          
          #query-1 , if the user is already in the data base then we will return to the login page
@@ -100,7 +115,7 @@ def success():
       if pattern.match(email):
          
           #connection with sqlite3 database for query to data 
-         connect=sqlite3.connect(r"C:/Users/ghosh/AppData/Local/Programs/Python/Python39/Flask_project/password.db")
+         connect=sqlite3.connect(r"C:\Program Files\DB Browser for SQLite\password.db")
          cursor=connect.cursor()
          
          #query-1 , if the user is already in the data base then we will return to the login page
@@ -125,7 +140,7 @@ def success():
             # return render_template('new.html',data=x)
             
             if x[0][0] == psw:
-               return render_template('login_success.html',data='You are successfully accessed your user ground')
+               return render_template('login_success.html')
             else:
                return render_template('login_page.html')
               
@@ -141,10 +156,18 @@ def success():
       
 ################################################################################################################
       
+#document data extraction for future use 
       
+@app.route('/extraction', methods=['POST','GET'])
+def extraction():
+   if request.method=='POST':
+      file=request.files['doc']
+      reader=PdfFileReader(file)
+      page=reader.getPage(0)
+      x=page.extractText()
       
-              
-         
+      return render_template('new.html',data=x)
+      
          
      
 if __name__=="__main__":

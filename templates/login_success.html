@@ -7,11 +7,9 @@
 	<title>Document</title>
 </head>
 <body>
-	<table>
-		<tr>
-		   <th> {{ data }} </th>
-		   
-		</tr>
-	</table>
+	<form action="/extraction" method="post" enctype="multipart/form-data">
+		<input type = "file" name ="doc" id="doc" accept=".bmp, .doc, .pdf">
+		<input type = "submit" value="Upload">
+	</form>
 </body>
 </html>
