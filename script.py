@@ -6,21 +6,12 @@ import os
 from flask import Flask,redirect,url_for,render_template,request,abort,flash,session
 from flask_session import Session
 
-# for wtf froms to be used
-from flask_wtf import FlaskForm
-from wtforms import StringField,SubmitField
-from wtforms.validators import DataRequired
-
-
 #for file upload related  modules 
 from werkzeug.utils import secure_filename
-from formsubmit import *
 
 
 #for security of password it is used
 from werkzeug.security import generate_password_hash,check_password_hash
-
-
 
 
 #importing essential modules for other workds
@@ -30,7 +21,7 @@ import re
 #importing PyPdf2 module for pdf manipilation
 from PyPDF2 import PdfFileReader,PdfFileReader
 from pprint import pprint
-
+   
 ###################################################################################################################
 
 #initialize flask web app 
@@ -67,36 +58,46 @@ def register():
       email=request.form['email']
       psw=request.form['password']
       
+     
+      
       
       email_match=r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
       pattern=re.compile(email_match)
       if pattern.match(email):
          
          #connection with sqlite3 database for query to data 
-         connect=sqlite3.connect(r"C:\Program Files\DB Browser for SQLite\password.db")
+         connect=sqlite3.connect(r"C:\\Program Files\\DB Browser for SQLite\\password.db")
          cursor=connect.cursor()
          
          #query-1 , if the user is already in the data base then we will return to the login page
          query="select email from password_table"
          cursor.execute(query)
          x=cursor.fetchall()
+      
          
          # this function only check if the email address is available  in database , if it is 
          # available in the database then it will redirect into the login page 
          # if is not available in database then it will insert into database with password 
-         
+        
+        # if email is in list of password table  
          if email in [y[0] for y in x]:
-               return render_template('login_page.html')
+            connect.close()
+            return render_template('login_page.html')
+         
          else:
-               query2="insert into password_table values(?,?)"
-               cursor.execute(query2,(email,psw))
-               connect.commit()
-               connect.close()
-               return render_template('new.html',data='You are successful into this system')
+            #if email address is not present then password in 
+            #encrypted format is storeed into the database 
+            query2="insert into password_table values(?,?)"
+            cursor.execute(query2,(email,psw))
+            connect.commit()
+            connect.close()
+            return render_template('new.html',data='You are successful into this system')
          
          
 
       else:
+         #if email address is not in right format then registration form
+         # is returned again 
          return render_template('register.html')
 
 ##################################################################################################################
@@ -115,13 +116,14 @@ def success():
       if pattern.match(email):
          
           #connection with sqlite3 database for query to data 
-         connect=sqlite3.connect(r"C:\Program Files\DB Browser for SQLite\password.db")
+         connect=sqlite3.connect(r"C:\\Program Files\\DB Browser for SQLite\\password.db")
          cursor=connect.cursor()
          
          #query-1 , if the user is already in the data base then we will return to the login page
          query="select email from password_table"
          cursor.execute(query)
          x=cursor.fetchall()
+         
          
          # this function only check if the email address is available  in database , if it is 
          # available in the database then it will redirect into the login page 
@@ -135,11 +137,12 @@ def success():
             
             query="select password from password_table where email=?"
             cursor.execute(query,(email,))
-            x=cursor.fetchall()
+            z=cursor.fetchall()
+            connect.close()
             
             # return render_template('new.html',data=x)
             
-            if x[0][0] == psw:
+            if z[0][0] == generate_password_hash(psw):
                return render_template('login_success.html')
             else:
                return render_template('login_page.html')
